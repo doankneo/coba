@@ -1,0 +1,3131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Database Aplikasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Login Container -->
+    <div id="loginContainer" class="min-h-screen flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">🔐 Login Sistem</h1>
+                <p class="text-gray-600">Masuk ke Sistem Database</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="loginUsername" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan username">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="loginPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan password">
+                </div>
+                <button onclick="login()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition duration-200 mb-4">
+                    🔑 Login
+                </button>
+                <button onclick="showRegisterForm()" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition duration-200">
+                    📝 Daftar Akun Baru
+                </button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="hidden">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                    <input type="text" id="registerName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Masukkan nama lengkap">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="registerUsername" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Masukkan username">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="registerPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Masukkan password">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password</label>
+                    <input type="password" id="registerConfirmPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Konfirmasi password">
+                </div>
+                <button onclick="register()" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition duration-200 mb-4">
+                    ✅ Daftar
+                </button>
+                <button onclick="showLoginForm()" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition duration-200">
+                    ← Kembali ke Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="mainContainer" class="container mx-auto px-4 py-8 hidden">
+        <!-- Header with Logout -->
+        <div class="flex justify-between items-center mb-8">
+            <div class="text-center flex-1">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">📊 Sistem Database</h1>
+                <p class="text-gray-600">Kelola data Anda dengan mudah</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-600">Selamat datang, <strong id="currentUserName"></strong></span>
+                <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                    🚪 Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Form Pencarian -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🔍 Pencarian Data</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kata Kunci 1</label>
+                    <input type="text" id="keyword1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan kata kunci pertama">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Filter Berdasarkan Field</label>
+                    <select id="keyword2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Pilih field untuk filter</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kata Kunci 3</label>
+                    <input type="text" id="keyword3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan kata kunci ketiga">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Database</label>
+                    <select id="searchDatabase" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updateFieldOptions()">
+                        <option value="profil">👤 Profil Beneficiary</option>
+                        <option value="praktikBaik">⭐ Praktik Baik</option>
+                        <option value="kegiatan">📅 Kegiatan</option>
+                        <option value="organisasi">🏢 Organisasi</option>
+                        <option value="profilAnak">👶 Profil Anak</option>
+                        <option value="usahaEkonomi">💼 Usaha Ekonomi</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="cariData()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition duration-200 mr-2">
+                        🔍 Cari Data
+                    </button>
+                    <button onclick="resetPencarian()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition duration-200">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Tabel Hasil Pencarian -->
+        <div id="hasilPencarianContainer" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">📋 Hasil Pencarian</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead id="searchTableHeader">
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="searchTableBody">
+                        <tr>
+                            <td colspan="2" class="px-4 py-8 text-center text-gray-500">Belum ada pencarian dilakukan</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tombol Profil, Praktik Baik, Kegiatan, Organisasi, dan Profil Anak -->
+        <div class="text-center mb-6 flex flex-wrap justify-center gap-2">
+            <button onclick="toggleProfil()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200">
+                👤 Profil
+            </button>
+            <button onclick="togglePraktikBaik()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200">
+                ⭐ Praktik Baik
+            </button>
+            <button onclick="toggleKegiatan()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200">
+                📅 Kegiatan
+            </button>
+            <button onclick="toggleOrganisasi()" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200">
+                🏢 Organisasi
+            </button>
+            <button onclick="toggleProfilAnak()" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200">
+                👶 Profil Anak
+            </button>
+            <button onclick="toggleUsahaEkonomi()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200">
+                💼 Usaha Ekonomi
+            </button>
+        </div>
+
+        <!-- Form Input -->
+        <div id="profilContainer" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📝 Profil Beneficiary</h2>
+            <div id="formContainer">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
+                        <input type="text" id="nama" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan nama">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan email">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Umur</label>
+                        <input type="number" id="umur" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan umur">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kota</label>
+                        <input type="text" id="kota" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan kota">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tombol untuk menambah field -->
+            <div class="mb-4">
+                <button onclick="tambahField()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                    ➕ Tambah Field
+                </button>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="flex flex-wrap gap-3">
+                <button onclick="simpanData()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition duration-200">
+                    💾 Simpan Data
+                </button>
+                <button onclick="updateData()" id="updateBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ✏️ Update Data
+                </button>
+                <button onclick="batalEdit()" id="batalBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ❌ Batal
+                </button>
+            </div>
+
+            <!-- Tabel Data Profil -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📋 Data Profil Beneficiary</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50" id="tableHeader">
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Email</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Umur</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Kota</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">Belum ada data tersimpan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Praktik Baik -->
+        <div id="praktikBaikContainer" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">⭐ Form Praktik Baik</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Organisasi</label>
+                    <input type="text" id="namaOrganisasi" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Masukkan nama organisasi">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pendamping</label>
+                    <input type="text" id="pendamping" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Masukkan nama pendamping">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
+                    <select id="bulan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="">Pilih Bulan</option>
+                        <option value="Januari">Januari</option>
+                        <option value="Februari">Februari</option>
+                        <option value="Maret">Maret</option>
+                        <option value="April">April</option>
+                        <option value="Mei">Mei</option>
+                        <option value="Juni">Juni</option>
+                        <option value="Juli">Juli</option>
+                        <option value="Agustus">Agustus</option>
+                        <option value="September">September</option>
+                        <option value="Oktober">Oktober</option>
+                        <option value="November">November</option>
+                        <option value="Desember">Desember</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tahun</label>
+                    <input type="number" id="tahun" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Masukkan tahun" min="2020" max="2030">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Advokasi</label>
+                    <textarea id="advokasi" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Deskripsi kegiatan advokasi"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mobilisasi Sumberdaya</label>
+                    <textarea id="mobilisasiSumberdaya" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Deskripsi mobilisasi sumberdaya"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Penguatan Kapasitas</label>
+                    <textarea id="penguatanKapasitas" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Deskripsi penguatan kapasitas"></textarea>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Praktik Baik -->
+            <div class="flex flex-wrap gap-3">
+                <button onclick="simpanPraktikBaik()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg transition duration-200">
+                    💾 Simpan Praktik Baik
+                </button>
+                <button onclick="updatePraktikBaik()" id="updatePraktikBaikBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ✏️ Update Praktik Baik
+                </button>
+                <button onclick="batalEditPraktikBaik()" id="batalPraktikBaikBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ❌ Batal
+                </button>
+            </div>
+
+            <!-- Tabel Data Praktik Baik -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⭐ Data Praktik Baik</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Organisasi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Pendamping</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Bulan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahun</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Advokasi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Mobilisasi Sumberdaya</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Penguatan Kapasitas</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="praktikBaikTableBody">
+                            <tr>
+                                <td colspan="9" class="px-4 py-8 text-center text-gray-500">Belum ada data praktik baik tersimpan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Kegiatan -->
+        <div id="kegiatanContainer" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📅 Form Kegiatan</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kegiatan</label>
+                    <select id="jenisKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="">Pilih Jenis Kegiatan</option>
+                        <option value="Pelatihan">Pelatihan</option>
+                        <option value="Workshop">Workshop</option>
+                        <option value="Seminar">Seminar</option>
+                        <option value="Sosialisasi">Sosialisasi</option>
+                        <option value="Pendampingan">Pendampingan</option>
+                        <option value="Monitoring">Monitoring</option>
+                        <option value="Evaluasi">Evaluasi</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Kegiatan</label>
+                    <input type="text" id="namaKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Masukkan nama kegiatan">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Beneficiary</label>
+                    <input type="text" id="namaBeneficiary" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Masukkan nama beneficiary">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select id="statusKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Tidak Aktif">Tidak Aktif</option>
+                        <option value="Selesai">Selesai</option>
+                        <option value="Berjalan">Berjalan</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin</label>
+                    <select id="jenisKelamin" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="">Pilih Jenis Kelamin</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Ragam</label>
+                    <input type="text" id="ragam" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Masukkan ragam">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Umur</label>
+                    <input type="number" id="umurKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Masukkan umur">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Organisasi</label>
+                    <input type="text" id="organisasiKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Masukkan nama organisasi">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi Kegiatan</label>
+                    <input type="text" id="lokasiKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Masukkan lokasi kegiatan">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                    <input type="number" id="tanggalKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Tanggal (1-31)" min="1" max="31">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
+                    <select id="bulanKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="">Pilih Bulan</option>
+                        <option value="Januari">Januari</option>
+                        <option value="Februari">Februari</option>
+                        <option value="Maret">Maret</option>
+                        <option value="April">April</option>
+                        <option value="Mei">Mei</option>
+                        <option value="Juni">Juni</option>
+                        <option value="Juli">Juli</option>
+                        <option value="Agustus">Agustus</option>
+                        <option value="September">September</option>
+                        <option value="Oktober">Oktober</option>
+                        <option value="November">November</option>
+                        <option value="Desember">Desember</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tahun</label>
+                    <input type="number" id="tahunKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Masukkan tahun" min="2020" max="2030">
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Kegiatan -->
+            <div class="flex flex-wrap gap-3">
+                <button onclick="simpanKegiatan()" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition duration-200">
+                    💾 Simpan Kegiatan
+                </button>
+                <button onclick="updateKegiatan()" id="updateKegiatanBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ✏️ Update Kegiatan
+                </button>
+                <button onclick="batalEditKegiatan()" id="batalKegiatanBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ❌ Batal
+                </button>
+            </div>
+
+            <!-- Tabel Data Kegiatan -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📅 Data Kegiatan</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Jenis Kegiatan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Kegiatan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Beneficiary</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Jenis Kelamin</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Ragam</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Umur</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Organisasi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Bulan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahun</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Lokasi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kegiatanTableBody">
+                            <tr>
+                                <td colspan="14" class="px-4 py-8 text-center text-gray-500">Belum ada data kegiatan tersimpan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Organisasi -->
+        <div id="organisasiContainer" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🏢 Form Organisasi</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Organisasi</label>
+                    <input type="text" id="namaOrganisasiForm" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Masukkan nama organisasi">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kepemilikan Visi</label>
+                    <select id="kepemilikanVisi" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ada">Ada</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Dalam Proses">Dalam Proses</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Misi</label>
+                    <select id="misi" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ada">Ada</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Dalam Proses">Dalam Proses</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Rencana Kerja</label>
+                    <select id="rencanaKerja" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ada">Ada</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Dalam Proses">Dalam Proses</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Aturan</label>
+                    <select id="aturan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ada">Ada</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Dalam Proses">Dalam Proses</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Rapat Bulanan</label>
+                    <select id="rapatBulanan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Rutin">Rutin</option>
+                        <option value="Tidak Rutin">Tidak Rutin</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Notulensi</label>
+                    <select id="notulensi" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ada">Ada</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Absensi</label>
+                    <select id="absensi" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ada">Ada</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Buku Tamu</label>
+                    <select id="bukuTamu" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ada">Ada</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Terlibat dalam Kegiatan</label>
+                    <select id="terlibatKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Tidak Aktif">Tidak Aktif</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Melakukan Kegiatan</label>
+                    <select id="melakukanKegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Rutin">Rutin</option>
+                        <option value="Tidak Rutin">Tidak Rutin</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Memiliki Papan Nama</label>
+                    <select id="papanNama" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ada">Ada</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Dalam Proses">Dalam Proses</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Membuat Laporan</label>
+                    <select id="membuatLaporan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Rutin">Rutin</option>
+                        <option value="Tidak Rutin">Tidak Rutin</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Organisasi -->
+            <div class="flex flex-wrap gap-3">
+                <button onclick="simpanOrganisasi()" class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-lg transition duration-200">
+                    💾 Simpan Organisasi
+                </button>
+                <button onclick="updateOrganisasi()" id="updateOrganisasiBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ✏️ Update Organisasi
+                </button>
+                <button onclick="batalEditOrganisasi()" id="batalOrganisasiBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ❌ Batal
+                </button>
+            </div>
+
+            <!-- Tabel Data Organisasi -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🏢 Data Organisasi</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Organisasi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Visi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Misi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Rencana Kerja</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aturan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Rapat Bulanan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Notulensi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Absensi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Buku Tamu</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Terlibat Kegiatan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Melakukan Kegiatan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Papan Nama</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Membuat Laporan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="organisasiTableBody">
+                            <tr>
+                                <td colspan="15" class="px-4 py-8 text-center text-gray-500">Belum ada data organisasi tersimpan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Usaha Ekonomi -->
+        <div id="usahaEkonomiContainer" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">💼 Form Usaha Ekonomi</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
+                    <input type="text" id="namaUsaha" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Masukkan nama pemilik usaha">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+                    <textarea id="alamatUsaha" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Masukkan alamat lengkap"></textarea>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Ragam</label>
+                    <select id="ragamUsaha" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="">Pilih Ragam</option>
+                        <option value="Mikro">Mikro</option>
+                        <option value="Kecil">Kecil</option>
+                        <option value="Menengah">Menengah</option>
+                        <option value="Besar">Besar</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Usaha</label>
+                    <select id="jenisUsaha" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="">Pilih Jenis Usaha</option>
+                        <option value="Perdagangan">Perdagangan</option>
+                        <option value="Jasa">Jasa</option>
+                        <option value="Manufaktur">Manufaktur</option>
+                        <option value="Pertanian">Pertanian</option>
+                        <option value="Perikanan">Perikanan</option>
+                        <option value="Peternakan">Peternakan</option>
+                        <option value="Kuliner">Kuliner</option>
+                        <option value="Kerajinan">Kerajinan</option>
+                        <option value="Teknologi">Teknologi</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pemanfaatan</label>
+                    <select id="pemanfaatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Optimal">Optimal</option>
+                        <option value="Cukup">Cukup</option>
+                        <option value="Kurang">Kurang</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Rencana Usaha</label>
+                    <select id="rencanaUsaha" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ada">Ada</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Dalam Proses">Dalam Proses</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Jaringan Bisnis</label>
+                    <select id="jaringanBisnis" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Luas">Luas</option>
+                        <option value="Terbatas">Terbatas</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Memiliki Pembukuan</label>
+                    <select id="memilikiPembukuan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
+                        <option value="Sederhana">Sederhana</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pihak yang Mendukung Usaha</label>
+                    <textarea id="pihakMendukung" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Sebutkan pihak yang mendukung usaha"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Dukungan YHS</label>
+                    <textarea id="dukunganYHS" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Deskripsi dukungan dari YHS"></textarea>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Penguatan Kapasitas yang Dibutuhkan</label>
+                <textarea id="penguatanKapasitasUsaha" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Deskripsi penguatan kapasitas yang dibutuhkan"></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                    <input type="number" id="tanggalUsaha" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Tanggal (1-31)" min="1" max="31">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
+                    <select id="bulanUsaha" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="">Pilih Bulan</option>
+                        <option value="Januari">Januari</option>
+                        <option value="Februari">Februari</option>
+                        <option value="Maret">Maret</option>
+                        <option value="April">April</option>
+                        <option value="Mei">Mei</option>
+                        <option value="Juni">Juni</option>
+                        <option value="Juli">Juli</option>
+                        <option value="Agustus">Agustus</option>
+                        <option value="September">September</option>
+                        <option value="Oktober">Oktober</option>
+                        <option value="November">November</option>
+                        <option value="Desember">Desember</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tahun</label>
+                    <input type="number" id="tahunUsaha" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Masukkan tahun" min="2020" max="2030">
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Usaha Ekonomi -->
+            <div class="flex flex-wrap gap-3">
+                <button onclick="simpanUsahaEkonomi()" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg transition duration-200">
+                    💾 Simpan Usaha Ekonomi
+                </button>
+                <button onclick="updateUsahaEkonomi()" id="updateUsahaEkonomiBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ✏️ Update Usaha Ekonomi
+                </button>
+                <button onclick="batalEditUsahaEkonomi()" id="batalUsahaEkonomiBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ❌ Batal
+                </button>
+            </div>
+
+            <!-- Tabel Data Usaha Ekonomi -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">💼 Data Usaha Ekonomi</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Alamat</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Ragam</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Jenis Usaha</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Pemanfaatan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Rencana Usaha</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Jaringan Bisnis</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Pembukuan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Pihak Mendukung</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Dukungan YHS</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Penguatan Kapasitas</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Bulan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahun</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usahaEkonomiTableBody">
+                            <tr>
+                                <td colspan="16" class="px-4 py-8 text-center text-gray-500">Belum ada data usaha ekonomi tersimpan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Profil Anak -->
+        <div id="profilAnakContainer" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">👶 Form Profil Anak</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
+                    <input type="text" id="namaAnak" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Masukkan nama anak">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+                    <textarea id="alamatAnak" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Masukkan alamat lengkap"></textarea>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kegiatan</label>
+                    <select id="jenisKegiatanAnak" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Jenis Kegiatan</option>
+                        <option value="Pendidikan">Pendidikan</option>
+                        <option value="Bermain">Bermain</option>
+                        <option value="Olahraga">Olahraga</option>
+                        <option value="Seni">Seni</option>
+                        <option value="Sosial">Sosial</option>
+                        <option value="Keagamaan">Keagamaan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Kegiatan</label>
+                    <input type="text" id="namaKegiatanAnak" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Masukkan nama kegiatan">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mendapat Apresiasi</label>
+                    <select id="mendapatApresiasi" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Diberikan Kesempatan</label>
+                    <select id="diberikanKesempatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Didengarkan</label>
+                    <select id="didengarkan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Terlibat dalam Kegiatan Keluarga</label>
+                    <select id="terlibatKeluarga" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
+                        <option value="Kadang-kadang">Kadang-kadang</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Akses Layanan Publik</label>
+                    <select id="aksesLayananPublik" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Mudah">Mudah</option>
+                        <option value="Sulit">Sulit</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Akses Layanan Kesehatan</label>
+                    <select id="aksesLayananKesehatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Mudah">Mudah</option>
+                        <option value="Sulit">Sulit</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mendapat Kekerasan Verbal</label>
+                    <select id="kekerasanVerbal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
+                        <option value="Pernah">Pernah</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kekerasan Fisik</label>
+                    <select id="kekerasanFisik" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
+                        <option value="Pernah">Pernah</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Diskriminasi</label>
+                    <select id="diskriminasi" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Status</option>
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
+                        <option value="Pernah">Pernah</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                    <input type="number" id="tanggalAnak" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Tanggal (1-31)" min="1" max="31">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
+                    <select id="bulanAnak" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="">Pilih Bulan</option>
+                        <option value="Januari">Januari</option>
+                        <option value="Februari">Februari</option>
+                        <option value="Maret">Maret</option>
+                        <option value="April">April</option>
+                        <option value="Mei">Mei</option>
+                        <option value="Juni">Juni</option>
+                        <option value="Juli">Juli</option>
+                        <option value="Agustus">Agustus</option>
+                        <option value="September">September</option>
+                        <option value="Oktober">Oktober</option>
+                        <option value="November">November</option>
+                        <option value="Desember">Desember</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tahun</label>
+                    <input type="number" id="tahunAnak" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Masukkan tahun" min="2020" max="2030">
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Profil Anak -->
+            <div class="flex flex-wrap gap-3">
+                <button onclick="simpanProfilAnak()" class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-lg transition duration-200">
+                    💾 Simpan Profil Anak
+                </button>
+                <button onclick="updateProfilAnak()" id="updateProfilAnakBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ✏️ Update Profil Anak
+                </button>
+                <button onclick="batalEditProfilAnak()" id="batalProfilAnakBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition duration-200 hidden">
+                    ❌ Batal
+                </button>
+            </div>
+
+            <!-- Tabel Data Profil Anak -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">👶 Data Profil Anak</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Alamat</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Jenis Kegiatan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Kegiatan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Apresiasi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Kesempatan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Didengarkan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Terlibat Keluarga</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Layanan Publik</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Layanan Kesehatan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Kekerasan Verbal</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Kekerasan Fisik</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Diskriminasi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Bulan</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahun</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="profilAnakTableBody">
+                            <tr>
+                                <td colspan="18" class="px-4 py-8 text-center text-gray-500">Belum ada data profil anak tersimpan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tombol Grafik -->
+        <div class="text-center mb-6">
+            <button onclick="toggleGrafikPencarian()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-3 rounded-lg text-lg font-semibold transition duration-200">
+                📊 Grafik Hasil Pencarian
+            </button>
+        </div>
+
+
+
+        <!-- Grafik Hasil Pencarian -->
+        <div id="grafikPencarianContainer" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">📊 Grafik Hasil Pencarian</h2>
+            
+            <div id="searchChartsContent" class="text-center text-gray-500 py-8">
+                Lakukan pencarian terlebih dahulu untuk melihat grafik
+            </div>
+            
+            <div id="searchChartsGrid" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <canvas id="searchChart1" width="400" height="300"></canvas>
+                    </div>
+                    <div>
+                        <canvas id="searchChart2" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+        // User Management Variables
+        let users = JSON.parse(localStorage.getItem('systemUsers')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        
+        // Database Variables
+        let database = [];
+        let praktikBaikDatabase = [];
+        let kegiatanDatabase = [];
+        let organisasiDatabase = [];
+        let profilAnakDatabase = [];
+        let usahaEkonomiDatabase = [];
+        let editIndex = -1;
+        let editPraktikBaikIndex = -1;
+        let editKegiatanIndex = -1;
+        let editOrganisasiIndex = -1;
+        let editProfilAnakIndex = -1;
+        let editUsahaEkonomiIndex = -1;
+        let customFields = [];
+        let searchChart1 = null;
+        let searchChart2 = null;
+        let currentSearchResults = [];
+        let currentSearchDatabase = '';
+        let currentSearchHeaders = [];
+
+        // Login System Functions
+        function showRegisterForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        function register() {
+            const name = document.getElementById('registerName').value.trim();
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+            // Validasi input
+            if (!name || !username || !password || !confirmPassword) {
+                alert('Mohon lengkapi semua field!');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Password dan konfirmasi password tidak sama!');
+                return;
+            }
+
+            if (password.length < 4) {
+                alert('Password minimal 4 karakter!');
+                return;
+            }
+
+            // Cek apakah username sudah ada
+            if (users.find(user => user.username === username)) {
+                alert('Username sudah digunakan! Pilih username lain.');
+                return;
+            }
+
+            // Simpan user baru
+            const newUser = {
+                id: Date.now(),
+                name: name,
+                username: username,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            localStorage.setItem('systemUsers', JSON.stringify(users));
+
+            alert('Pendaftaran berhasil! Silakan login dengan akun baru Anda.');
+            
+            // Clear form dan kembali ke login
+            document.getElementById('registerName').value = '';
+            document.getElementById('registerUsername').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('registerConfirmPassword').value = '';
+            showLoginForm();
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                alert('Mohon masukkan username dan password!');
+                return;
+            }
+
+            // Cari user
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (!user) {
+                alert('Username atau password salah!');
+                return;
+            }
+
+            // Login berhasil
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Tampilkan aplikasi utama
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('mainContainer').classList.remove('hidden');
+            document.getElementById('currentUserName').textContent = currentUser.name;
+
+            // Load data user
+            loadUserData();
+
+            alert(`Selamat datang, ${currentUser.name}!`);
+        }
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                // Simpan data user sebelum logout
+                saveUserData();
+                
+                // Clear current user
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+
+                // Reset form login
+                document.getElementById('loginUsername').value = '';
+                document.getElementById('loginPassword').value = '';
+
+                // Tampilkan halaman login
+                document.getElementById('mainContainer').classList.add('hidden');
+                document.getElementById('loginContainer').classList.remove('hidden');
+                showLoginForm();
+
+                alert('Anda telah logout. Terima kasih!');
+            }
+        }
+
+        function saveUserData() {
+            if (!currentUser) return;
+
+            const userData = {
+                database: database,
+                praktikBaikDatabase: praktikBaikDatabase,
+                kegiatanDatabase: kegiatanDatabase,
+                organisasiDatabase: organisasiDatabase,
+                profilAnakDatabase: profilAnakDatabase,
+                usahaEkonomiDatabase: usahaEkonomiDatabase,
+                customFields: customFields
+            };
+
+            localStorage.setItem(`userData_${currentUser.id}`, JSON.stringify(userData));
+        }
+
+        function loadUserData() {
+            if (!currentUser) return;
+
+            const userData = JSON.parse(localStorage.getItem(`userData_${currentUser.id}`));
+            
+            if (userData) {
+                database = userData.database || [];
+                praktikBaikDatabase = userData.praktikBaikDatabase || [];
+                kegiatanDatabase = userData.kegiatanDatabase || [];
+                organisasiDatabase = userData.organisasiDatabase || [];
+                profilAnakDatabase = userData.profilAnakDatabase || [];
+                usahaEkonomiDatabase = userData.usahaEkonomiDatabase || [];
+                customFields = userData.customFields || [];
+
+                // Refresh tampilan data
+                tampilkanData();
+                tampilkanPraktikBaik();
+                tampilkanKegiatan();
+                tampilkanOrganisasi();
+                tampilkanProfilAnak();
+                tampilkanUsahaEkonomi();
+                updateTableHeader();
+                updateFieldOptions();
+            }
+        }
+
+        // Check login status saat halaman dimuat
+        function checkLoginStatus() {
+            if (currentUser) {
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('mainContainer').classList.remove('hidden');
+                document.getElementById('currentUserName').textContent = currentUser.name;
+                loadUserData();
+            } else {
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('mainContainer').classList.add('hidden');
+            }
+        }
+
+        // Auto save data setiap 30 detik
+        setInterval(() => {
+            if (currentUser) {
+                saveUserData();
+            }
+        }, 30000);
+
+        function tambahField() {
+            const fieldName = prompt("Masukkan nama field baru:");
+            if (fieldName && fieldName.trim()) {
+                const fieldId = fieldName.toLowerCase().replace(/\s+/g, '_');
+                customFields.push({name: fieldName, id: fieldId});
+                
+                // Tambah input field
+                const formContainer = document.getElementById('formContainer');
+                const newFieldDiv = document.createElement('div');
+                newFieldDiv.className = 'mb-4';
+                newFieldDiv.innerHTML = `
+                    <label class="block text-sm font-medium text-gray-700 mb-2">${fieldName}</label>
+                    <input type="text" id="${fieldId}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan ${fieldName.toLowerCase()}">
+                `;
+                formContainer.appendChild(newFieldDiv);
+                
+                updateTableHeader();
+            }
+        }
+
+        function updateTableHeader() {
+            const header = document.getElementById('tableHeader');
+            header.innerHTML = `
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Email</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Umur</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Kota</th>
+                ${customFields.map(field => `<th class="px-4 py-3 text-left text-sm font-medium text-gray-700">${field.name}</th>`).join('')}
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+            `;
+        }
+
+        function simpanData() {
+            const nama = document.getElementById('nama').value;
+            const email = document.getElementById('email').value;
+            const umur = document.getElementById('umur').value;
+            const kota = document.getElementById('kota').value;
+
+            if (!nama || !email || !umur || !kota) {
+                alert('Mohon lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            const newData = {nama, email, umur: parseInt(umur), kota};
+            
+            // Tambah custom fields
+            customFields.forEach(field => {
+                const value = document.getElementById(field.id).value;
+                newData[field.id] = value;
+            });
+
+            database.push(newData);
+            clearForm();
+            tampilkanData();
+            saveUserData(); // Auto save after adding data
+            alert('Data berhasil disimpan!');
+        }
+
+        function updateData() {
+            if (editIndex === -1) return;
+
+            const nama = document.getElementById('nama').value;
+            const email = document.getElementById('email').value;
+            const umur = document.getElementById('umur').value;
+            const kota = document.getElementById('kota').value;
+
+            if (!nama || !email || !umur || !kota) {
+                alert('Mohon lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            const updatedData = {nama, email, umur: parseInt(umur), kota};
+            
+            // Update custom fields
+            customFields.forEach(field => {
+                const value = document.getElementById(field.id).value;
+                updatedData[field.id] = value;
+            });
+
+            database[editIndex] = updatedData;
+            editIndex = -1;
+            clearForm();
+            tampilkanData();
+            saveUserData(); // Auto save after updating data
+            
+            document.getElementById('updateBtn').classList.add('hidden');
+            document.getElementById('batalBtn').classList.add('hidden');
+            alert('Data berhasil diupdate!');
+        }
+
+        function editData(index) {
+            const data = database[index];
+            document.getElementById('nama').value = data.nama;
+            document.getElementById('email').value = data.email;
+            document.getElementById('umur').value = data.umur;
+            document.getElementById('kota').value = data.kota;
+            
+            // Fill custom fields
+            customFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (element) {
+                    element.value = data[field.id] || '';
+                }
+            });
+
+            editIndex = index;
+            document.getElementById('updateBtn').classList.remove('hidden');
+            document.getElementById('batalBtn').classList.remove('hidden');
+        }
+
+        function hapusData(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                database.splice(index, 1);
+                tampilkanData();
+                saveUserData(); // Auto save after deleting data
+                alert('Data berhasil dihapus!');
+            }
+        }
+
+        function batalEdit() {
+            editIndex = -1;
+            clearForm();
+            document.getElementById('updateBtn').classList.add('hidden');
+            document.getElementById('batalBtn').classList.add('hidden');
+        }
+
+        function clearForm() {
+            document.getElementById('nama').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('umur').value = '';
+            document.getElementById('kota').value = '';
+            
+            customFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (element) {
+                    element.value = '';
+                }
+            });
+        }
+
+        function tampilkanData() {
+            const tbody = document.getElementById('tableBody');
+            
+            if (database.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${5 + customFields.length + 1}" class="px-4 py-8 text-center text-gray-500">Belum ada data tersimpan</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = database.map((data, index) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm text-gray-900">${index + 1}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.nama}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.email}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.umur}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.kota}</td>
+                    ${customFields.map(field => `<td class="px-4 py-3 text-sm text-gray-900">${data[field.id] || '-'}</td>`).join('')}
+                    <td class="px-4 py-3 text-sm">
+                        <button onclick="editData(${index})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs mr-2 transition duration-200">Edit</button>
+                        <button onclick="hapusData(${index})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition duration-200">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+
+
+        function toggleProfil() {
+            const container = document.getElementById('profilContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function togglePraktikBaik() {
+            const container = document.getElementById('praktikBaikContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function toggleKegiatan() {
+            const container = document.getElementById('kegiatanContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function toggleOrganisasi() {
+            const container = document.getElementById('organisasiContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function toggleProfilAnak() {
+            const container = document.getElementById('profilAnakContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function toggleUsahaEkonomi() {
+            const container = document.getElementById('usahaEkonomiContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function getAgeRange(age) {
+            if (age < 20) return '< 20';
+            if (age < 30) return '20-29';
+            if (age < 40) return '30-39';
+            if (age < 50) return '40-49';
+            return '50+';
+        }
+
+        // Fungsi untuk Praktik Baik
+        function simpanPraktikBaik() {
+            const namaOrganisasi = document.getElementById('namaOrganisasi').value;
+            const pendamping = document.getElementById('pendamping').value;
+            const bulan = document.getElementById('bulan').value;
+            const tahun = document.getElementById('tahun').value;
+            const advokasi = document.getElementById('advokasi').value;
+            const mobilisasiSumberdaya = document.getElementById('mobilisasiSumberdaya').value;
+            const penguatanKapasitas = document.getElementById('penguatanKapasitas').value;
+
+            if (!namaOrganisasi || !pendamping || !bulan || !tahun) {
+                alert('Mohon lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            const newPraktikBaik = {
+                namaOrganisasi,
+                pendamping,
+                bulan,
+                tahun: parseInt(tahun),
+                advokasi,
+                mobilisasiSumberdaya,
+                penguatanKapasitas
+            };
+
+            praktikBaikDatabase.push(newPraktikBaik);
+            clearPraktikBaikForm();
+            tampilkanPraktikBaik();
+            alert('Data praktik baik berhasil disimpan!');
+        }
+
+        function updatePraktikBaik() {
+            if (editPraktikBaikIndex === -1) return;
+
+            const namaOrganisasi = document.getElementById('namaOrganisasi').value;
+            const pendamping = document.getElementById('pendamping').value;
+            const bulan = document.getElementById('bulan').value;
+            const tahun = document.getElementById('tahun').value;
+            const advokasi = document.getElementById('advokasi').value;
+            const mobilisasiSumberdaya = document.getElementById('mobilisasiSumberdaya').value;
+            const penguatanKapasitas = document.getElementById('penguatanKapasitas').value;
+
+            if (!namaOrganisasi || !pendamping || !bulan || !tahun) {
+                alert('Mohon lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            const updatedPraktikBaik = {
+                namaOrganisasi,
+                pendamping,
+                bulan,
+                tahun: parseInt(tahun),
+                advokasi,
+                mobilisasiSumberdaya,
+                penguatanKapasitas
+            };
+
+            praktikBaikDatabase[editPraktikBaikIndex] = updatedPraktikBaik;
+            editPraktikBaikIndex = -1;
+            clearPraktikBaikForm();
+            tampilkanPraktikBaik();
+            
+            document.getElementById('updatePraktikBaikBtn').classList.add('hidden');
+            document.getElementById('batalPraktikBaikBtn').classList.add('hidden');
+            alert('Data praktik baik berhasil diupdate!');
+        }
+
+        function editPraktikBaik(index) {
+            const data = praktikBaikDatabase[index];
+            document.getElementById('namaOrganisasi').value = data.namaOrganisasi;
+            document.getElementById('pendamping').value = data.pendamping;
+            document.getElementById('bulan').value = data.bulan;
+            document.getElementById('tahun').value = data.tahun;
+            document.getElementById('advokasi').value = data.advokasi;
+            document.getElementById('mobilisasiSumberdaya').value = data.mobilisasiSumberdaya;
+            document.getElementById('penguatanKapasitas').value = data.penguatanKapasitas;
+
+            editPraktikBaikIndex = index;
+            document.getElementById('updatePraktikBaikBtn').classList.remove('hidden');
+            document.getElementById('batalPraktikBaikBtn').classList.remove('hidden');
+        }
+
+        function hapusPraktikBaik(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data praktik baik ini?')) {
+                praktikBaikDatabase.splice(index, 1);
+                tampilkanPraktikBaik();
+                alert('Data praktik baik berhasil dihapus!');
+            }
+        }
+
+        function batalEditPraktikBaik() {
+            editPraktikBaikIndex = -1;
+            clearPraktikBaikForm();
+            document.getElementById('updatePraktikBaikBtn').classList.add('hidden');
+            document.getElementById('batalPraktikBaikBtn').classList.add('hidden');
+        }
+
+        function clearPraktikBaikForm() {
+            document.getElementById('namaOrganisasi').value = '';
+            document.getElementById('pendamping').value = '';
+            document.getElementById('bulan').value = '';
+            document.getElementById('tahun').value = '';
+            document.getElementById('advokasi').value = '';
+            document.getElementById('mobilisasiSumberdaya').value = '';
+            document.getElementById('penguatanKapasitas').value = '';
+        }
+
+        function tampilkanPraktikBaik() {
+            const tbody = document.getElementById('praktikBaikTableBody');
+            
+            if (praktikBaikDatabase.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-8 text-center text-gray-500">Belum ada data praktik baik tersimpan</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = praktikBaikDatabase.map((data, index) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm text-gray-900">${index + 1}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.namaOrganisasi}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.pendamping}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.bulan}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.tahun}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.advokasi || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.mobilisasiSumberdaya || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.penguatanKapasitas || '-'}</td>
+                    <td class="px-4 py-3 text-sm">
+                        <button onclick="editPraktikBaik(${index})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs mr-2 transition duration-200">Edit</button>
+                        <button onclick="hapusPraktikBaik(${index})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition duration-200">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Fungsi untuk Kegiatan
+        function simpanKegiatan() {
+            const jenisKegiatan = document.getElementById('jenisKegiatan').value;
+            const namaKegiatan = document.getElementById('namaKegiatan').value;
+            const namaBeneficiary = document.getElementById('namaBeneficiary').value;
+            const statusKegiatan = document.getElementById('statusKegiatan').value;
+            const jenisKelamin = document.getElementById('jenisKelamin').value;
+            const ragam = document.getElementById('ragam').value;
+            const umurKegiatan = document.getElementById('umurKegiatan').value;
+            const organisasiKegiatan = document.getElementById('organisasiKegiatan').value;
+            const tanggalKegiatan = document.getElementById('tanggalKegiatan').value;
+            const bulanKegiatan = document.getElementById('bulanKegiatan').value;
+            const tahunKegiatan = document.getElementById('tahunKegiatan').value;
+            const lokasiKegiatan = document.getElementById('lokasiKegiatan').value;
+
+            if (!jenisKegiatan || !namaKegiatan || !namaBeneficiary || !statusKegiatan) {
+                alert('Mohon lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            const newKegiatan = {
+                jenisKegiatan,
+                namaKegiatan,
+                namaBeneficiary,
+                statusKegiatan,
+                jenisKelamin,
+                ragam,
+                umurKegiatan: umurKegiatan ? parseInt(umurKegiatan) : null,
+                organisasiKegiatan,
+                tanggalKegiatan: tanggalKegiatan ? parseInt(tanggalKegiatan) : null,
+                bulanKegiatan,
+                tahunKegiatan: tahunKegiatan ? parseInt(tahunKegiatan) : null,
+                lokasiKegiatan
+            };
+
+            kegiatanDatabase.push(newKegiatan);
+            clearKegiatanForm();
+            tampilkanKegiatan();
+            alert('Data kegiatan berhasil disimpan!');
+        }
+
+        function updateKegiatan() {
+            if (editKegiatanIndex === -1) return;
+
+            const jenisKegiatan = document.getElementById('jenisKegiatan').value;
+            const namaKegiatan = document.getElementById('namaKegiatan').value;
+            const namaBeneficiary = document.getElementById('namaBeneficiary').value;
+            const statusKegiatan = document.getElementById('statusKegiatan').value;
+            const jenisKelamin = document.getElementById('jenisKelamin').value;
+            const ragam = document.getElementById('ragam').value;
+            const umurKegiatan = document.getElementById('umurKegiatan').value;
+            const organisasiKegiatan = document.getElementById('organisasiKegiatan').value;
+            const tanggalKegiatan = document.getElementById('tanggalKegiatan').value;
+            const bulanKegiatan = document.getElementById('bulanKegiatan').value;
+            const tahunKegiatan = document.getElementById('tahunKegiatan').value;
+            const lokasiKegiatan = document.getElementById('lokasiKegiatan').value;
+
+            if (!jenisKegiatan || !namaKegiatan || !namaBeneficiary || !statusKegiatan) {
+                alert('Mohon lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            const updatedKegiatan = {
+                jenisKegiatan,
+                namaKegiatan,
+                namaBeneficiary,
+                statusKegiatan,
+                jenisKelamin,
+                ragam,
+                umurKegiatan: umurKegiatan ? parseInt(umurKegiatan) : null,
+                organisasiKegiatan,
+                tanggalKegiatan: tanggalKegiatan ? parseInt(tanggalKegiatan) : null,
+                bulanKegiatan,
+                tahunKegiatan: tahunKegiatan ? parseInt(tahunKegiatan) : null,
+                lokasiKegiatan
+            };
+
+            kegiatanDatabase[editKegiatanIndex] = updatedKegiatan;
+            editKegiatanIndex = -1;
+            clearKegiatanForm();
+            tampilkanKegiatan();
+            
+            document.getElementById('updateKegiatanBtn').classList.add('hidden');
+            document.getElementById('batalKegiatanBtn').classList.add('hidden');
+            alert('Data kegiatan berhasil diupdate!');
+        }
+
+        function editKegiatan(index) {
+            const data = kegiatanDatabase[index];
+            document.getElementById('jenisKegiatan').value = data.jenisKegiatan;
+            document.getElementById('namaKegiatan').value = data.namaKegiatan;
+            document.getElementById('namaBeneficiary').value = data.namaBeneficiary;
+            document.getElementById('statusKegiatan').value = data.statusKegiatan;
+            document.getElementById('jenisKelamin').value = data.jenisKelamin;
+            document.getElementById('ragam').value = data.ragam;
+            document.getElementById('umurKegiatan').value = data.umurKegiatan || '';
+            document.getElementById('organisasiKegiatan').value = data.organisasiKegiatan;
+            document.getElementById('tanggalKegiatan').value = data.tanggalKegiatan || '';
+            document.getElementById('bulanKegiatan').value = data.bulanKegiatan;
+            document.getElementById('tahunKegiatan').value = data.tahunKegiatan || '';
+            document.getElementById('lokasiKegiatan').value = data.lokasiKegiatan;
+
+            editKegiatanIndex = index;
+            document.getElementById('updateKegiatanBtn').classList.remove('hidden');
+            document.getElementById('batalKegiatanBtn').classList.remove('hidden');
+        }
+
+        function hapusKegiatan(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data kegiatan ini?')) {
+                kegiatanDatabase.splice(index, 1);
+                tampilkanKegiatan();
+                alert('Data kegiatan berhasil dihapus!');
+            }
+        }
+
+        function batalEditKegiatan() {
+            editKegiatanIndex = -1;
+            clearKegiatanForm();
+            document.getElementById('updateKegiatanBtn').classList.add('hidden');
+            document.getElementById('batalKegiatanBtn').classList.add('hidden');
+        }
+
+        function clearKegiatanForm() {
+            document.getElementById('jenisKegiatan').value = '';
+            document.getElementById('namaKegiatan').value = '';
+            document.getElementById('namaBeneficiary').value = '';
+            document.getElementById('statusKegiatan').value = '';
+            document.getElementById('jenisKelamin').value = '';
+            document.getElementById('ragam').value = '';
+            document.getElementById('umurKegiatan').value = '';
+            document.getElementById('organisasiKegiatan').value = '';
+            document.getElementById('tanggalKegiatan').value = '';
+            document.getElementById('bulanKegiatan').value = '';
+            document.getElementById('tahunKegiatan').value = '';
+            document.getElementById('lokasiKegiatan').value = '';
+        }
+
+        function tampilkanKegiatan() {
+            const tbody = document.getElementById('kegiatanTableBody');
+            
+            if (kegiatanDatabase.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="14" class="px-4 py-8 text-center text-gray-500">Belum ada data kegiatan tersimpan</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = kegiatanDatabase.map((data, index) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm text-gray-900">${index + 1}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.jenisKegiatan}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.namaKegiatan}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.namaBeneficiary}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.statusKegiatan}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.jenisKelamin || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.ragam || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.umurKegiatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.organisasiKegiatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.tanggalKegiatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.bulanKegiatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.tahunKegiatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.lokasiKegiatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm">
+                        <button onclick="editKegiatan(${index})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs mr-2 transition duration-200">Edit</button>
+                        <button onclick="hapusKegiatan(${index})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition duration-200">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Fungsi untuk Organisasi
+        function simpanOrganisasi() {
+            const namaOrganisasiForm = document.getElementById('namaOrganisasiForm').value;
+            const kepemilikanVisi = document.getElementById('kepemilikanVisi').value;
+            const misi = document.getElementById('misi').value;
+            const rencanaKerja = document.getElementById('rencanaKerja').value;
+            const aturan = document.getElementById('aturan').value;
+            const rapatBulanan = document.getElementById('rapatBulanan').value;
+            const notulensi = document.getElementById('notulensi').value;
+            const absensi = document.getElementById('absensi').value;
+            const bukuTamu = document.getElementById('bukuTamu').value;
+            const terlibatKegiatan = document.getElementById('terlibatKegiatan').value;
+            const melakukanKegiatan = document.getElementById('melakukanKegiatan').value;
+            const papanNama = document.getElementById('papanNama').value;
+            const membuatLaporan = document.getElementById('membuatLaporan').value;
+
+            if (!namaOrganisasiForm) {
+                alert('Mohon masukkan nama organisasi!');
+                return;
+            }
+
+            const newOrganisasi = {
+                namaOrganisasiForm,
+                kepemilikanVisi,
+                misi,
+                rencanaKerja,
+                aturan,
+                rapatBulanan,
+                notulensi,
+                absensi,
+                bukuTamu,
+                terlibatKegiatan,
+                melakukanKegiatan,
+                papanNama,
+                membuatLaporan
+            };
+
+            organisasiDatabase.push(newOrganisasi);
+            clearOrganisasiForm();
+            tampilkanOrganisasi();
+            alert('Data organisasi berhasil disimpan!');
+        }
+
+        function updateOrganisasi() {
+            if (editOrganisasiIndex === -1) return;
+
+            const namaOrganisasiForm = document.getElementById('namaOrganisasiForm').value;
+            const kepemilikanVisi = document.getElementById('kepemilikanVisi').value;
+            const misi = document.getElementById('misi').value;
+            const rencanaKerja = document.getElementById('rencanaKerja').value;
+            const aturan = document.getElementById('aturan').value;
+            const rapatBulanan = document.getElementById('rapatBulanan').value;
+            const notulensi = document.getElementById('notulensi').value;
+            const absensi = document.getElementById('absensi').value;
+            const bukuTamu = document.getElementById('bukuTamu').value;
+            const terlibatKegiatan = document.getElementById('terlibatKegiatan').value;
+            const melakukanKegiatan = document.getElementById('melakukanKegiatan').value;
+            const papanNama = document.getElementById('papanNama').value;
+            const membuatLaporan = document.getElementById('membuatLaporan').value;
+
+            if (!namaOrganisasiForm) {
+                alert('Mohon masukkan nama organisasi!');
+                return;
+            }
+
+            const updatedOrganisasi = {
+                namaOrganisasiForm,
+                kepemilikanVisi,
+                misi,
+                rencanaKerja,
+                aturan,
+                rapatBulanan,
+                notulensi,
+                absensi,
+                bukuTamu,
+                terlibatKegiatan,
+                melakukanKegiatan,
+                papanNama,
+                membuatLaporan
+            };
+
+            organisasiDatabase[editOrganisasiIndex] = updatedOrganisasi;
+            editOrganisasiIndex = -1;
+            clearOrganisasiForm();
+            tampilkanOrganisasi();
+            
+            document.getElementById('updateOrganisasiBtn').classList.add('hidden');
+            document.getElementById('batalOrganisasiBtn').classList.add('hidden');
+            alert('Data organisasi berhasil diupdate!');
+        }
+
+        function editOrganisasi(index) {
+            const data = organisasiDatabase[index];
+            document.getElementById('namaOrganisasiForm').value = data.namaOrganisasiForm;
+            document.getElementById('kepemilikanVisi').value = data.kepemilikanVisi;
+            document.getElementById('misi').value = data.misi;
+            document.getElementById('rencanaKerja').value = data.rencanaKerja;
+            document.getElementById('aturan').value = data.aturan;
+            document.getElementById('rapatBulanan').value = data.rapatBulanan;
+            document.getElementById('notulensi').value = data.notulensi;
+            document.getElementById('absensi').value = data.absensi;
+            document.getElementById('bukuTamu').value = data.bukuTamu;
+            document.getElementById('terlibatKegiatan').value = data.terlibatKegiatan;
+            document.getElementById('melakukanKegiatan').value = data.melakukanKegiatan;
+            document.getElementById('papanNama').value = data.papanNama;
+            document.getElementById('membuatLaporan').value = data.membuatLaporan;
+
+            editOrganisasiIndex = index;
+            document.getElementById('updateOrganisasiBtn').classList.remove('hidden');
+            document.getElementById('batalOrganisasiBtn').classList.remove('hidden');
+        }
+
+        function hapusOrganisasi(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data organisasi ini?')) {
+                organisasiDatabase.splice(index, 1);
+                tampilkanOrganisasi();
+                alert('Data organisasi berhasil dihapus!');
+            }
+        }
+
+        function batalEditOrganisasi() {
+            editOrganisasiIndex = -1;
+            clearOrganisasiForm();
+            document.getElementById('updateOrganisasiBtn').classList.add('hidden');
+            document.getElementById('batalOrganisasiBtn').classList.add('hidden');
+        }
+
+        function clearOrganisasiForm() {
+            document.getElementById('namaOrganisasiForm').value = '';
+            document.getElementById('kepemilikanVisi').value = '';
+            document.getElementById('misi').value = '';
+            document.getElementById('rencanaKerja').value = '';
+            document.getElementById('aturan').value = '';
+            document.getElementById('rapatBulanan').value = '';
+            document.getElementById('notulensi').value = '';
+            document.getElementById('absensi').value = '';
+            document.getElementById('bukuTamu').value = '';
+            document.getElementById('terlibatKegiatan').value = '';
+            document.getElementById('melakukanKegiatan').value = '';
+            document.getElementById('papanNama').value = '';
+            document.getElementById('membuatLaporan').value = '';
+        }
+
+        function tampilkanOrganisasi() {
+            const tbody = document.getElementById('organisasiTableBody');
+            
+            if (organisasiDatabase.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="15" class="px-4 py-8 text-center text-gray-500">Belum ada data organisasi tersimpan</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = organisasiDatabase.map((data, index) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm text-gray-900">${index + 1}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.namaOrganisasiForm}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.kepemilikanVisi || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.misi || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.rencanaKerja || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.aturan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.rapatBulanan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.notulensi || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.absensi || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.bukuTamu || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.terlibatKegiatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.melakukanKegiatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.papanNama || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.membuatLaporan || '-'}</td>
+                    <td class="px-4 py-3 text-sm">
+                        <button onclick="editOrganisasi(${index})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs mr-2 transition duration-200">Edit</button>
+                        <button onclick="hapusOrganisasi(${index})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition duration-200">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Fungsi untuk Profil Anak
+        function simpanProfilAnak() {
+            const namaAnak = document.getElementById('namaAnak').value;
+            const alamatAnak = document.getElementById('alamatAnak').value;
+            const jenisKegiatanAnak = document.getElementById('jenisKegiatanAnak').value;
+            const namaKegiatanAnak = document.getElementById('namaKegiatanAnak').value;
+            const mendapatApresiasi = document.getElementById('mendapatApresiasi').value;
+            const diberikanKesempatan = document.getElementById('diberikanKesempatan').value;
+            const didengarkan = document.getElementById('didengarkan').value;
+            const terlibatKeluarga = document.getElementById('terlibatKeluarga').value;
+            const aksesLayananPublik = document.getElementById('aksesLayananPublik').value;
+            const aksesLayananKesehatan = document.getElementById('aksesLayananKesehatan').value;
+            const kekerasanVerbal = document.getElementById('kekerasanVerbal').value;
+            const kekerasanFisik = document.getElementById('kekerasanFisik').value;
+            const diskriminasi = document.getElementById('diskriminasi').value;
+            const tanggalAnak = document.getElementById('tanggalAnak').value;
+            const bulanAnak = document.getElementById('bulanAnak').value;
+            const tahunAnak = document.getElementById('tahunAnak').value;
+
+            if (!namaAnak || !alamatAnak) {
+                alert('Mohon lengkapi nama dan alamat anak!');
+                return;
+            }
+
+            const newProfilAnak = {
+                namaAnak,
+                alamatAnak,
+                jenisKegiatanAnak,
+                namaKegiatanAnak,
+                mendapatApresiasi,
+                diberikanKesempatan,
+                didengarkan,
+                terlibatKeluarga,
+                aksesLayananPublik,
+                aksesLayananKesehatan,
+                kekerasanVerbal,
+                kekerasanFisik,
+                diskriminasi,
+                tanggalAnak: tanggalAnak ? parseInt(tanggalAnak) : null,
+                bulanAnak,
+                tahunAnak: tahunAnak ? parseInt(tahunAnak) : null
+            };
+
+            profilAnakDatabase.push(newProfilAnak);
+            clearProfilAnakForm();
+            tampilkanProfilAnak();
+            alert('Data profil anak berhasil disimpan!');
+        }
+
+        function updateProfilAnak() {
+            if (editProfilAnakIndex === -1) return;
+
+            const namaAnak = document.getElementById('namaAnak').value;
+            const alamatAnak = document.getElementById('alamatAnak').value;
+            const jenisKegiatanAnak = document.getElementById('jenisKegiatanAnak').value;
+            const namaKegiatanAnak = document.getElementById('namaKegiatanAnak').value;
+            const mendapatApresiasi = document.getElementById('mendapatApresiasi').value;
+            const diberikanKesempatan = document.getElementById('diberikanKesempatan').value;
+            const didengarkan = document.getElementById('didengarkan').value;
+            const terlibatKeluarga = document.getElementById('terlibatKeluarga').value;
+            const aksesLayananPublik = document.getElementById('aksesLayananPublik').value;
+            const aksesLayananKesehatan = document.getElementById('aksesLayananKesehatan').value;
+            const kekerasanVerbal = document.getElementById('kekerasanVerbal').value;
+            const kekerasanFisik = document.getElementById('kekerasanFisik').value;
+            const diskriminasi = document.getElementById('diskriminasi').value;
+            const tanggalAnak = document.getElementById('tanggalAnak').value;
+            const bulanAnak = document.getElementById('bulanAnak').value;
+            const tahunAnak = document.getElementById('tahunAnak').value;
+
+            if (!namaAnak || !alamatAnak) {
+                alert('Mohon lengkapi nama dan alamat anak!');
+                return;
+            }
+
+            const updatedProfilAnak = {
+                namaAnak,
+                alamatAnak,
+                jenisKegiatanAnak,
+                namaKegiatanAnak,
+                mendapatApresiasi,
+                diberikanKesempatan,
+                didengarkan,
+                terlibatKeluarga,
+                aksesLayananPublik,
+                aksesLayananKesehatan,
+                kekerasanVerbal,
+                kekerasanFisik,
+                diskriminasi,
+                tanggalAnak: tanggalAnak ? parseInt(tanggalAnak) : null,
+                bulanAnak,
+                tahunAnak: tahunAnak ? parseInt(tahunAnak) : null
+            };
+
+            profilAnakDatabase[editProfilAnakIndex] = updatedProfilAnak;
+            editProfilAnakIndex = -1;
+            clearProfilAnakForm();
+            tampilkanProfilAnak();
+            
+            document.getElementById('updateProfilAnakBtn').classList.add('hidden');
+            document.getElementById('batalProfilAnakBtn').classList.add('hidden');
+            alert('Data profil anak berhasil diupdate!');
+        }
+
+        function editProfilAnak(index) {
+            const data = profilAnakDatabase[index];
+            document.getElementById('namaAnak').value = data.namaAnak;
+            document.getElementById('alamatAnak').value = data.alamatAnak;
+            document.getElementById('jenisKegiatanAnak').value = data.jenisKegiatanAnak;
+            document.getElementById('namaKegiatanAnak').value = data.namaKegiatanAnak;
+            document.getElementById('mendapatApresiasi').value = data.mendapatApresiasi;
+            document.getElementById('diberikanKesempatan').value = data.diberikanKesempatan;
+            document.getElementById('didengarkan').value = data.didengarkan;
+            document.getElementById('terlibatKeluarga').value = data.terlibatKeluarga;
+            document.getElementById('aksesLayananPublik').value = data.aksesLayananPublik;
+            document.getElementById('aksesLayananKesehatan').value = data.aksesLayananKesehatan;
+            document.getElementById('kekerasanVerbal').value = data.kekerasanVerbal;
+            document.getElementById('kekerasanFisik').value = data.kekerasanFisik;
+            document.getElementById('diskriminasi').value = data.diskriminasi;
+            document.getElementById('tanggalAnak').value = data.tanggalAnak || '';
+            document.getElementById('bulanAnak').value = data.bulanAnak;
+            document.getElementById('tahunAnak').value = data.tahunAnak || '';
+
+            editProfilAnakIndex = index;
+            document.getElementById('updateProfilAnakBtn').classList.remove('hidden');
+            document.getElementById('batalProfilAnakBtn').classList.remove('hidden');
+        }
+
+        function hapusProfilAnak(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data profil anak ini?')) {
+                profilAnakDatabase.splice(index, 1);
+                tampilkanProfilAnak();
+                alert('Data profil anak berhasil dihapus!');
+            }
+        }
+
+        function batalEditProfilAnak() {
+            editProfilAnakIndex = -1;
+            clearProfilAnakForm();
+            document.getElementById('updateProfilAnakBtn').classList.add('hidden');
+            document.getElementById('batalProfilAnakBtn').classList.add('hidden');
+        }
+
+        function clearProfilAnakForm() {
+            document.getElementById('namaAnak').value = '';
+            document.getElementById('alamatAnak').value = '';
+            document.getElementById('jenisKegiatanAnak').value = '';
+            document.getElementById('namaKegiatanAnak').value = '';
+            document.getElementById('mendapatApresiasi').value = '';
+            document.getElementById('diberikanKesempatan').value = '';
+            document.getElementById('didengarkan').value = '';
+            document.getElementById('terlibatKeluarga').value = '';
+            document.getElementById('aksesLayananPublik').value = '';
+            document.getElementById('aksesLayananKesehatan').value = '';
+            document.getElementById('kekerasanVerbal').value = '';
+            document.getElementById('kekerasanFisik').value = '';
+            document.getElementById('diskriminasi').value = '';
+            document.getElementById('tanggalAnak').value = '';
+            document.getElementById('bulanAnak').value = '';
+            document.getElementById('tahunAnak').value = '';
+        }
+
+        function tampilkanProfilAnak() {
+            const tbody = document.getElementById('profilAnakTableBody');
+            
+            if (profilAnakDatabase.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="18" class="px-4 py-8 text-center text-gray-500">Belum ada data profil anak tersimpan</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = profilAnakDatabase.map((data, index) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm text-gray-900">${index + 1}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.namaAnak}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.alamatAnak}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.jenisKegiatanAnak || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.namaKegiatanAnak || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.mendapatApresiasi || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.diberikanKesempatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.didengarkan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.terlibatKeluarga || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.aksesLayananPublik || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.aksesLayananKesehatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.kekerasanVerbal || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.kekerasanFisik || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.diskriminasi || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.tanggalAnak || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.bulanAnak || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.tahunAnak || '-'}</td>
+                    <td class="px-4 py-3 text-sm">
+                        <button onclick="editProfilAnak(${index})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs mr-2 transition duration-200">Edit</button>
+                        <button onclick="hapusProfilAnak(${index})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition duration-200">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Fungsi untuk Usaha Ekonomi
+        function simpanUsahaEkonomi() {
+            const namaUsaha = document.getElementById('namaUsaha').value;
+            const alamatUsaha = document.getElementById('alamatUsaha').value;
+            const ragamUsaha = document.getElementById('ragamUsaha').value;
+            const jenisUsaha = document.getElementById('jenisUsaha').value;
+            const pemanfaatan = document.getElementById('pemanfaatan').value;
+            const rencanaUsaha = document.getElementById('rencanaUsaha').value;
+            const jaringanBisnis = document.getElementById('jaringanBisnis').value;
+            const memilikiPembukuan = document.getElementById('memilikiPembukuan').value;
+            const pihakMendukung = document.getElementById('pihakMendukung').value;
+            const dukunganYHS = document.getElementById('dukunganYHS').value;
+            const penguatanKapasitasUsaha = document.getElementById('penguatanKapasitasUsaha').value;
+            const tanggalUsaha = document.getElementById('tanggalUsaha').value;
+            const bulanUsaha = document.getElementById('bulanUsaha').value;
+            const tahunUsaha = document.getElementById('tahunUsaha').value;
+
+            if (!namaUsaha || !alamatUsaha) {
+                alert('Mohon lengkapi nama dan alamat!');
+                return;
+            }
+
+            const newUsahaEkonomi = {
+                namaUsaha,
+                alamatUsaha,
+                ragamUsaha,
+                jenisUsaha,
+                pemanfaatan,
+                rencanaUsaha,
+                jaringanBisnis,
+                memilikiPembukuan,
+                pihakMendukung,
+                dukunganYHS,
+                penguatanKapasitasUsaha,
+                tanggalUsaha: tanggalUsaha ? parseInt(tanggalUsaha) : null,
+                bulanUsaha,
+                tahunUsaha: tahunUsaha ? parseInt(tahunUsaha) : null
+            };
+
+            usahaEkonomiDatabase.push(newUsahaEkonomi);
+            clearUsahaEkonomiForm();
+            tampilkanUsahaEkonomi();
+            alert('Data usaha ekonomi berhasil disimpan!');
+        }
+
+        function updateUsahaEkonomi() {
+            if (editUsahaEkonomiIndex === -1) return;
+
+            const namaUsaha = document.getElementById('namaUsaha').value;
+            const alamatUsaha = document.getElementById('alamatUsaha').value;
+            const ragamUsaha = document.getElementById('ragamUsaha').value;
+            const jenisUsaha = document.getElementById('jenisUsaha').value;
+            const pemanfaatan = document.getElementById('pemanfaatan').value;
+            const rencanaUsaha = document.getElementById('rencanaUsaha').value;
+            const jaringanBisnis = document.getElementById('jaringanBisnis').value;
+            const memilikiPembukuan = document.getElementById('memilikiPembukuan').value;
+            const pihakMendukung = document.getElementById('pihakMendukung').value;
+            const dukunganYHS = document.getElementById('dukunganYHS').value;
+            const penguatanKapasitasUsaha = document.getElementById('penguatanKapasitasUsaha').value;
+            const tanggalUsaha = document.getElementById('tanggalUsaha').value;
+            const bulanUsaha = document.getElementById('bulanUsaha').value;
+            const tahunUsaha = document.getElementById('tahunUsaha').value;
+
+            if (!namaUsaha || !alamatUsaha) {
+                alert('Mohon lengkapi nama dan alamat!');
+                return;
+            }
+
+            const updatedUsahaEkonomi = {
+                namaUsaha,
+                alamatUsaha,
+                ragamUsaha,
+                jenisUsaha,
+                pemanfaatan,
+                rencanaUsaha,
+                jaringanBisnis,
+                memilikiPembukuan,
+                pihakMendukung,
+                dukunganYHS,
+                penguatanKapasitasUsaha,
+                tanggalUsaha: tanggalUsaha ? parseInt(tanggalUsaha) : null,
+                bulanUsaha,
+                tahunUsaha: tahunUsaha ? parseInt(tahunUsaha) : null
+            };
+
+            usahaEkonomiDatabase[editUsahaEkonomiIndex] = updatedUsahaEkonomi;
+            editUsahaEkonomiIndex = -1;
+            clearUsahaEkonomiForm();
+            tampilkanUsahaEkonomi();
+            
+            document.getElementById('updateUsahaEkonomiBtn').classList.add('hidden');
+            document.getElementById('batalUsahaEkonomiBtn').classList.add('hidden');
+            alert('Data usaha ekonomi berhasil diupdate!');
+        }
+
+        function editUsahaEkonomi(index) {
+            const data = usahaEkonomiDatabase[index];
+            document.getElementById('namaUsaha').value = data.namaUsaha;
+            document.getElementById('alamatUsaha').value = data.alamatUsaha;
+            document.getElementById('ragamUsaha').value = data.ragamUsaha;
+            document.getElementById('jenisUsaha').value = data.jenisUsaha;
+            document.getElementById('pemanfaatan').value = data.pemanfaatan;
+            document.getElementById('rencanaUsaha').value = data.rencanaUsaha;
+            document.getElementById('jaringanBisnis').value = data.jaringanBisnis;
+            document.getElementById('memilikiPembukuan').value = data.memilikiPembukuan;
+            document.getElementById('pihakMendukung').value = data.pihakMendukung;
+            document.getElementById('dukunganYHS').value = data.dukunganYHS;
+            document.getElementById('penguatanKapasitasUsaha').value = data.penguatanKapasitasUsaha;
+            document.getElementById('tanggalUsaha').value = data.tanggalUsaha || '';
+            document.getElementById('bulanUsaha').value = data.bulanUsaha;
+            document.getElementById('tahunUsaha').value = data.tahunUsaha || '';
+
+            editUsahaEkonomiIndex = index;
+            document.getElementById('updateUsahaEkonomiBtn').classList.remove('hidden');
+            document.getElementById('batalUsahaEkonomiBtn').classList.remove('hidden');
+        }
+
+        function hapusUsahaEkonomi(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data usaha ekonomi ini?')) {
+                usahaEkonomiDatabase.splice(index, 1);
+                tampilkanUsahaEkonomi();
+                alert('Data usaha ekonomi berhasil dihapus!');
+            }
+        }
+
+        function batalEditUsahaEkonomi() {
+            editUsahaEkonomiIndex = -1;
+            clearUsahaEkonomiForm();
+            document.getElementById('updateUsahaEkonomiBtn').classList.add('hidden');
+            document.getElementById('batalUsahaEkonomiBtn').classList.add('hidden');
+        }
+
+        function clearUsahaEkonomiForm() {
+            document.getElementById('namaUsaha').value = '';
+            document.getElementById('alamatUsaha').value = '';
+            document.getElementById('ragamUsaha').value = '';
+            document.getElementById('jenisUsaha').value = '';
+            document.getElementById('pemanfaatan').value = '';
+            document.getElementById('rencanaUsaha').value = '';
+            document.getElementById('jaringanBisnis').value = '';
+            document.getElementById('memilikiPembukuan').value = '';
+            document.getElementById('pihakMendukung').value = '';
+            document.getElementById('dukunganYHS').value = '';
+            document.getElementById('penguatanKapasitasUsaha').value = '';
+            document.getElementById('tanggalUsaha').value = '';
+            document.getElementById('bulanUsaha').value = '';
+            document.getElementById('tahunUsaha').value = '';
+        }
+
+        function tampilkanUsahaEkonomi() {
+            const tbody = document.getElementById('usahaEkonomiTableBody');
+            
+            if (usahaEkonomiDatabase.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="16" class="px-4 py-8 text-center text-gray-500">Belum ada data usaha ekonomi tersimpan</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = usahaEkonomiDatabase.map((data, index) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm text-gray-900">${index + 1}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.namaUsaha}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.alamatUsaha}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.ragamUsaha || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.jenisUsaha || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.pemanfaatan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.rencanaUsaha || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.jaringanBisnis || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.memilikiPembukuan || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.pihakMendukung || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.dukunganYHS || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.penguatanKapasitasUsaha || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.tanggalUsaha || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.bulanUsaha || '-'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${data.tahunUsaha || '-'}</td>
+                    <td class="px-4 py-3 text-sm">
+                        <button onclick="editUsahaEkonomi(${index})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs mr-2 transition duration-200">Edit</button>
+                        <button onclick="hapusUsahaEkonomi(${index})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition duration-200">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Fungsi untuk update dropdown field berdasarkan database yang dipilih
+        function updateFieldOptions() {
+            const selectedDatabase = document.getElementById('searchDatabase').value;
+            const fieldSelect = document.getElementById('keyword2');
+            
+            // Clear existing options
+            fieldSelect.innerHTML = '<option value="">Pilih field untuk filter</option>';
+            
+            let fieldOptions = [];
+            
+            switch(selectedDatabase) {
+                case 'profil':
+                    fieldOptions = ['nama', 'email', 'umur', 'kota', ...customFields.map(field => field.id)];
+                    break;
+                case 'praktikBaik':
+                    fieldOptions = ['namaOrganisasi', 'pendamping', 'bulan', 'tahun', 'advokasi', 'mobilisasiSumberdaya', 'penguatanKapasitas'];
+                    break;
+                case 'kegiatan':
+                    fieldOptions = ['jenisKegiatan', 'namaKegiatan', 'namaBeneficiary', 'statusKegiatan', 'jenisKelamin', 'ragam', 'umurKegiatan', 'organisasiKegiatan', 'tanggalKegiatan', 'bulanKegiatan', 'tahunKegiatan', 'lokasiKegiatan'];
+                    break;
+                case 'organisasi':
+                    fieldOptions = ['namaOrganisasiForm', 'kepemilikanVisi', 'misi', 'rencanaKerja', 'aturan', 'rapatBulanan', 'notulensi', 'absensi', 'bukuTamu', 'terlibatKegiatan', 'melakukanKegiatan', 'papanNama', 'membuatLaporan'];
+                    break;
+                case 'profilAnak':
+                    fieldOptions = ['namaAnak', 'alamatAnak', 'jenisKegiatanAnak', 'namaKegiatanAnak', 'mendapatApresiasi', 'diberikanKesempatan', 'didengarkan', 'terlibatKeluarga', 'aksesLayananPublik', 'aksesLayananKesehatan', 'kekerasanVerbal', 'kekerasanFisik', 'diskriminasi', 'tanggalAnak', 'bulanAnak', 'tahunAnak'];
+                    break;
+                case 'usahaEkonomi':
+                    fieldOptions = ['namaUsaha', 'alamatUsaha', 'ragamUsaha', 'jenisUsaha', 'pemanfaatan', 'rencanaUsaha', 'jaringanBisnis', 'memilikiPembukuan', 'pihakMendukung', 'dukunganYHS', 'penguatanKapasitasUsaha', 'tanggalUsaha', 'bulanUsaha', 'tahunUsaha'];
+                    break;
+            }
+            
+            // Add options to keyword2 select
+            fieldOptions.forEach(field => {
+                const displayName = getFieldDisplayName(field, selectedDatabase);
+                
+                const option = document.createElement('option');
+                option.value = field;
+                option.textContent = displayName;
+                fieldSelect.appendChild(option);
+            });
+        }
+        
+        // Fungsi untuk mendapatkan nama field yang user-friendly
+        function getFieldDisplayName(fieldName, database) {
+            const fieldMappings = {
+                'profil': {
+                    'nama': 'Nama',
+                    'email': 'Email',
+                    'umur': 'Umur',
+                    'kota': 'Kota'
+                },
+                'praktikBaik': {
+                    'namaOrganisasi': 'Nama Organisasi',
+                    'pendamping': 'Pendamping',
+                    'bulan': 'Bulan',
+                    'tahun': 'Tahun',
+                    'advokasi': 'Advokasi',
+                    'mobilisasiSumberdaya': 'Mobilisasi Sumberdaya',
+                    'penguatanKapasitas': 'Penguatan Kapasitas'
+                },
+                'kegiatan': {
+                    'jenisKegiatan': 'Jenis Kegiatan',
+                    'namaKegiatan': 'Nama Kegiatan',
+                    'namaBeneficiary': 'Nama Beneficiary',
+                    'statusKegiatan': 'Status',
+                    'jenisKelamin': 'Jenis Kelamin',
+                    'ragam': 'Ragam',
+                    'umurKegiatan': 'Umur',
+                    'organisasiKegiatan': 'Organisasi',
+                    'tanggalKegiatan': 'Tanggal',
+                    'bulanKegiatan': 'Bulan',
+                    'tahunKegiatan': 'Tahun',
+                    'lokasiKegiatan': 'Lokasi'
+                },
+                'organisasi': {
+                    'namaOrganisasiForm': 'Nama Organisasi',
+                    'kepemilikanVisi': 'Visi',
+                    'misi': 'Misi',
+                    'rencanaKerja': 'Rencana Kerja',
+                    'aturan': 'Aturan',
+                    'rapatBulanan': 'Rapat Bulanan',
+                    'notulensi': 'Notulensi',
+                    'absensi': 'Absensi',
+                    'bukuTamu': 'Buku Tamu',
+                    'terlibatKegiatan': 'Terlibat Kegiatan',
+                    'melakukanKegiatan': 'Melakukan Kegiatan',
+                    'papanNama': 'Papan Nama',
+                    'membuatLaporan': 'Membuat Laporan'
+                },
+                'profilAnak': {
+                    'namaAnak': 'Nama',
+                    'alamatAnak': 'Alamat',
+                    'jenisKegiatanAnak': 'Jenis Kegiatan',
+                    'namaKegiatanAnak': 'Nama Kegiatan',
+                    'mendapatApresiasi': 'Apresiasi',
+                    'diberikanKesempatan': 'Kesempatan',
+                    'didengarkan': 'Didengarkan',
+                    'terlibatKeluarga': 'Terlibat Keluarga',
+                    'aksesLayananPublik': 'Layanan Publik',
+                    'aksesLayananKesehatan': 'Layanan Kesehatan',
+                    'kekerasanVerbal': 'Kekerasan Verbal',
+                    'kekerasanFisik': 'Kekerasan Fisik',
+                    'diskriminasi': 'Diskriminasi',
+                    'tanggalAnak': 'Tanggal',
+                    'bulanAnak': 'Bulan',
+                    'tahunAnak': 'Tahun'
+                },
+                'usahaEkonomi': {
+                    'namaUsaha': 'Nama',
+                    'alamatUsaha': 'Alamat',
+                    'ragamUsaha': 'Ragam',
+                    'jenisUsaha': 'Jenis Usaha',
+                    'pemanfaatan': 'Pemanfaatan',
+                    'rencanaUsaha': 'Rencana Usaha',
+                    'jaringanBisnis': 'Jaringan Bisnis',
+                    'memilikiPembukuan': 'Pembukuan',
+                    'pihakMendukung': 'Pihak Mendukung',
+                    'dukunganYHS': 'Dukungan YHS',
+                    'penguatanKapasitasUsaha': 'Penguatan Kapasitas',
+                    'tanggalUsaha': 'Tanggal',
+                    'bulanUsaha': 'Bulan',
+                    'tahunUsaha': 'Tahun'
+                }
+            };
+            
+            // Check if it's a custom field
+            const customField = customFields.find(field => field.id === fieldName);
+            if (customField) {
+                return customField.name;
+            }
+            
+            return fieldMappings[database]?.[fieldName] || fieldName;
+        }
+
+        // Fungsi Pencarian
+        function cariData() {
+            const keyword1 = document.getElementById('keyword1').value.toLowerCase().trim();
+            const selectedField = document.getElementById('keyword2').value;
+            const keyword3 = document.getElementById('keyword3').value.toLowerCase().trim();
+            const selectedDatabase = document.getElementById('searchDatabase').value;
+
+            if (!keyword1 && !selectedField && !keyword3) {
+                alert('Mohon masukkan minimal satu kata kunci atau pilih field!');
+                return;
+            }
+
+            let dataToSearch = [];
+            let headers = [];
+            let databaseName = '';
+
+            // Pilih database berdasarkan pilihan user
+            switch(selectedDatabase) {
+                case 'profil':
+                    dataToSearch = database;
+                    headers = ['No', 'Nama', 'Email', 'Umur', 'Kota', ...customFields.map(field => field.name)];
+                    databaseName = 'Profil Beneficiary';
+                    break;
+                case 'praktikBaik':
+                    dataToSearch = praktikBaikDatabase;
+                    headers = ['No', 'Nama Organisasi', 'Pendamping', 'Bulan', 'Tahun', 'Advokasi', 'Mobilisasi Sumberdaya', 'Penguatan Kapasitas'];
+                    databaseName = 'Praktik Baik';
+                    break;
+                case 'kegiatan':
+                    dataToSearch = kegiatanDatabase;
+                    headers = ['No', 'Jenis Kegiatan', 'Nama Kegiatan', 'Nama Beneficiary', 'Status', 'Jenis Kelamin', 'Ragam', 'Umur', 'Organisasi', 'Tanggal', 'Bulan', 'Tahun', 'Lokasi'];
+                    databaseName = 'Kegiatan';
+                    break;
+                case 'organisasi':
+                    dataToSearch = organisasiDatabase;
+                    headers = ['No', 'Nama Organisasi', 'Visi', 'Misi', 'Rencana Kerja', 'Aturan', 'Rapat Bulanan', 'Notulensi', 'Absensi', 'Buku Tamu', 'Terlibat Kegiatan', 'Melakukan Kegiatan', 'Papan Nama', 'Membuat Laporan'];
+                    databaseName = 'Organisasi';
+                    break;
+                case 'profilAnak':
+                    dataToSearch = profilAnakDatabase;
+                    headers = ['No', 'Nama', 'Alamat', 'Jenis Kegiatan', 'Nama Kegiatan', 'Apresiasi', 'Kesempatan', 'Didengarkan', 'Terlibat Keluarga', 'Layanan Publik', 'Layanan Kesehatan', 'Kekerasan Verbal', 'Kekerasan Fisik', 'Diskriminasi', 'Tanggal', 'Bulan', 'Tahun'];
+                    databaseName = 'Profil Anak';
+                    break;
+                case 'usahaEkonomi':
+                    dataToSearch = usahaEkonomiDatabase;
+                    headers = ['No', 'Nama', 'Alamat', 'Ragam', 'Jenis Usaha', 'Pemanfaatan', 'Rencana Usaha', 'Jaringan Bisnis', 'Pembukuan', 'Pihak Mendukung', 'Dukungan YHS', 'Penguatan Kapasitas', 'Tanggal', 'Bulan', 'Tahun'];
+                    databaseName = 'Usaha Ekonomi';
+                    break;
+            }
+
+            // Mulai dengan semua data
+            let hasilPencarian = [...dataToSearch];
+
+            // Filter 1: Kata Kunci 1 (pencarian umum di semua field)
+            if (keyword1) {
+                hasilPencarian = hasilPencarian.filter(item => {
+                    const itemString = JSON.stringify(item).toLowerCase();
+                    return itemString.includes(keyword1);
+                });
+            }
+
+            // Filter 2: Field Spesifik (memperkecil hasil dari filter 1)
+            if (selectedField) {
+                hasilPencarian = hasilPencarian.filter(item => {
+                    const fieldValue = item[selectedField];
+                    // Hanya tampilkan data yang memiliki nilai di field yang dipilih
+                    return fieldValue && fieldValue.toString().trim() !== '';
+                });
+            }
+
+            // Filter 3: Kata Kunci 3 (pencarian spesifik dalam field yang dipilih)
+            if (keyword3 && selectedField) {
+                // Jika ada field yang dipilih, cari kata kunci 3 hanya dalam field tersebut
+                hasilPencarian = hasilPencarian.filter(item => {
+                    const fieldValue = item[selectedField];
+                    if (!fieldValue) return false;
+                    return fieldValue.toString().toLowerCase().includes(keyword3);
+                });
+            } else if (keyword3 && !selectedField) {
+                // Jika tidak ada field yang dipilih, cari kata kunci 3 di semua field
+                hasilPencarian = hasilPencarian.filter(item => {
+                    const itemString = JSON.stringify(item).toLowerCase();
+                    return itemString.includes(keyword3);
+                });
+            }
+
+            // Tampilkan hasil
+            tampilkanHasilPencarian(hasilPencarian, headers, databaseName, selectedDatabase);
+        }
+
+        function tampilkanHasilPencarian(hasil, headers, databaseName, selectedDatabase) {
+            const container = document.getElementById('hasilPencarianContainer');
+            const tableHeader = document.getElementById('searchTableHeader');
+            const tableBody = document.getElementById('searchTableBody');
+
+            // Simpan hasil pencarian untuk grafik
+            currentSearchResults = hasil;
+            currentSearchDatabase = selectedDatabase;
+            currentSearchHeaders = headers;
+
+            // Update judul
+            container.querySelector('h3').textContent = `📋 Hasil Pencarian - ${databaseName}`;
+
+            // Update header tabel
+            tableHeader.innerHTML = `
+                <tr class="bg-gray-50">
+                    ${headers.map(header => `<th class="px-4 py-3 text-left text-sm font-medium text-gray-700">${header}</th>`).join('')}
+                </tr>
+            `;
+
+            // Update body tabel
+            if (hasil.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="${headers.length}" class="px-4 py-8 text-center text-gray-500">Tidak ada data yang ditemukan</td></tr>`;
+            } else {
+                tableBody.innerHTML = hasil.map((item, index) => {
+                    let rowData = [index + 1];
+                    
+                    // Sesuaikan data berdasarkan database yang dipilih
+                    switch(selectedDatabase) {
+                        case 'profil':
+                            rowData.push(item.nama, item.email, item.umur, item.kota);
+                            customFields.forEach(field => {
+                                rowData.push(item[field.id] || '-');
+                            });
+                            break;
+                        case 'praktikBaik':
+                            rowData.push(item.namaOrganisasi, item.pendamping, item.bulan, item.tahun, item.advokasi || '-', item.mobilisasiSumberdaya || '-', item.penguatanKapasitas || '-');
+                            break;
+                        case 'kegiatan':
+                            rowData.push(item.jenisKegiatan, item.namaKegiatan, item.namaBeneficiary, item.statusKegiatan, item.jenisKelamin || '-', item.ragam || '-', item.umurKegiatan || '-', item.organisasiKegiatan || '-', item.tanggalKegiatan || '-', item.bulanKegiatan || '-', item.tahunKegiatan || '-', item.lokasiKegiatan || '-');
+                            break;
+                        case 'organisasi':
+                            rowData.push(item.namaOrganisasiForm, item.kepemilikanVisi || '-', item.misi || '-', item.rencanaKerja || '-', item.aturan || '-', item.rapatBulanan || '-', item.notulensi || '-', item.absensi || '-', item.bukuTamu || '-', item.terlibatKegiatan || '-', item.melakukanKegiatan || '-', item.papanNama || '-', item.membuatLaporan || '-');
+                            break;
+                        case 'profilAnak':
+                            rowData.push(item.namaAnak, item.alamatAnak, item.jenisKegiatanAnak || '-', item.namaKegiatanAnak || '-', item.mendapatApresiasi || '-', item.diberikanKesempatan || '-', item.didengarkan || '-', item.terlibatKeluarga || '-', item.aksesLayananPublik || '-', item.aksesLayananKesehatan || '-', item.kekerasanVerbal || '-', item.kekerasanFisik || '-', item.diskriminasi || '-', item.tanggalAnak || '-', item.bulanAnak || '-', item.tahunAnak || '-');
+                            break;
+                        case 'usahaEkonomi':
+                            rowData.push(item.namaUsaha, item.alamatUsaha, item.ragamUsaha || '-', item.jenisUsaha || '-', item.pemanfaatan || '-', item.rencanaUsaha || '-', item.jaringanBisnis || '-', item.memilikiPembukuan || '-', item.pihakMendukung || '-', item.dukunganYHS || '-', item.penguatanKapasitasUsaha || '-', item.tanggalUsaha || '-', item.bulanUsaha || '-', item.tahunUsaha || '-');
+                            break;
+                    }
+
+                    return `
+                        <tr class="border-b hover:bg-gray-50">
+                            ${rowData.map(data => `<td class="px-4 py-3 text-sm text-gray-900">${data}</td>`).join('')}
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // Tampilkan container hasil
+            container.classList.remove('hidden');
+        }
+
+        function toggleGrafikPencarian() {
+            const container = document.getElementById('grafikPencarianContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                if (currentSearchResults.length > 0) {
+                    updateGrafikPencarian();
+                }
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function updateGrafikPencarian() {
+            if (currentSearchResults.length === 0) {
+                document.getElementById('searchChartsContent').classList.remove('hidden');
+                document.getElementById('searchChartsGrid').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('searchChartsContent').classList.add('hidden');
+            document.getElementById('searchChartsGrid').classList.remove('hidden');
+
+            // Destroy existing charts
+            if (searchChart1) searchChart1.destroy();
+            if (searchChart2) searchChart2.destroy();
+
+            // Generate charts based on database type
+            switch(currentSearchDatabase) {
+                case 'profil':
+                    createProfilCharts();
+                    break;
+                case 'praktikBaik':
+                    createPraktikBaikCharts();
+                    break;
+                case 'kegiatan':
+                    createKegiatanCharts();
+                    break;
+                case 'organisasi':
+                    createOrganisasiCharts();
+                    break;
+                case 'profilAnak':
+                    createProfilAnakCharts();
+                    break;
+                case 'usahaEkonomi':
+                    createUsahaEkonomiCharts();
+                    break;
+            }
+        }
+
+        function createProfilCharts() {
+            // Chart 1: Distribusi Umur
+            const umurData = {};
+            currentSearchResults.forEach(item => {
+                const range = getAgeRange(item.umur);
+                umurData[range] = (umurData[range] || 0) + 1;
+            });
+
+            const ctx1 = document.getElementById('searchChart1').getContext('2d');
+            searchChart1 = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(umurData),
+                    datasets: [{
+                        label: 'Jumlah Orang',
+                        data: Object.values(umurData),
+                        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                        borderColor: 'rgba(99, 102, 241, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribusi Umur - Hasil Pencarian'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Distribusi Kota
+            const kotaData = {};
+            currentSearchResults.forEach(item => {
+                kotaData[item.kota] = (kotaData[item.kota] || 0) + 1;
+            });
+
+            const ctx2 = document.getElementById('searchChart2').getContext('2d');
+            searchChart2 = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(kotaData),
+                    datasets: [{
+                        label: 'Jumlah Orang',
+                        data: Object.values(kotaData),
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(168, 85, 247, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(20, 184, 166, 0.8)',
+                            'rgba(236, 72, 153, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribusi Kota - Hasil Pencarian'
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPraktikBaikCharts() {
+            // Chart 1: Distribusi per Bulan
+            const bulanData = {};
+            currentSearchResults.forEach(item => {
+                bulanData[item.bulan] = (bulanData[item.bulan] || 0) + 1;
+            });
+
+            const ctx1 = document.getElementById('searchChart1').getContext('2d');
+            searchChart1 = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(bulanData),
+                    datasets: [{
+                        label: 'Jumlah Praktik Baik',
+                        data: Object.values(bulanData),
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Praktik Baik per Bulan - Hasil Pencarian'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Distribusi per Tahun
+            const tahunData = {};
+            currentSearchResults.forEach(item => {
+                tahunData[item.tahun] = (tahunData[item.tahun] || 0) + 1;
+            });
+
+            const ctx2 = document.getElementById('searchChart2').getContext('2d');
+            searchChart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(tahunData),
+                    datasets: [{
+                        label: 'Jumlah Praktik Baik',
+                        data: Object.values(tahunData),
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Praktik Baik per Tahun - Hasil Pencarian'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createKegiatanCharts() {
+            // Chart 1: Distribusi Jenis Kegiatan
+            const jenisData = {};
+            currentSearchResults.forEach(item => {
+                jenisData[item.jenisKegiatan] = (jenisData[item.jenisKegiatan] || 0) + 1;
+            });
+
+            const ctx1 = document.getElementById('searchChart1').getContext('2d');
+            searchChart1 = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(jenisData),
+                    datasets: [{
+                        label: 'Jumlah Kegiatan',
+                        data: Object.values(jenisData),
+                        backgroundColor: [
+                            'rgba(251, 146, 60, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(168, 85, 247, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(236, 72, 153, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribusi Jenis Kegiatan - Hasil Pencarian'
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Distribusi Status
+            const statusData = {};
+            currentSearchResults.forEach(item => {
+                statusData[item.statusKegiatan] = (statusData[item.statusKegiatan] || 0) + 1;
+            });
+
+            const ctx2 = document.getElementById('searchChart2').getContext('2d');
+            searchChart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(statusData),
+                    datasets: [{
+                        label: 'Jumlah Kegiatan',
+                        data: Object.values(statusData),
+                        backgroundColor: 'rgba(251, 146, 60, 0.8)',
+                        borderColor: 'rgba(251, 146, 60, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribusi Status Kegiatan - Hasil Pencarian'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createOrganisasiCharts() {
+            // Chart 1: Status Kepemilikan Visi
+            const visiData = {};
+            currentSearchResults.forEach(item => {
+                const status = item.kepemilikanVisi || 'Tidak Diisi';
+                visiData[status] = (visiData[status] || 0) + 1;
+            });
+
+            const ctx1 = document.getElementById('searchChart1').getContext('2d');
+            searchChart1 = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(visiData),
+                    datasets: [{
+                        label: 'Jumlah Organisasi',
+                        data: Object.values(visiData),
+                        backgroundColor: [
+                            'rgba(20, 184, 166, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(245, 158, 11, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Status Kepemilikan Visi - Hasil Pencarian'
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Status Rapat Bulanan
+            const rapatData = {};
+            currentSearchResults.forEach(item => {
+                const status = item.rapatBulanan || 'Tidak Diisi';
+                rapatData[status] = (rapatData[status] || 0) + 1;
+            });
+
+            const ctx2 = document.getElementById('searchChart2').getContext('2d');
+            searchChart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(rapatData),
+                    datasets: [{
+                        label: 'Jumlah Organisasi',
+                        data: Object.values(rapatData),
+                        backgroundColor: 'rgba(20, 184, 166, 0.8)',
+                        borderColor: 'rgba(20, 184, 166, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Status Rapat Bulanan - Hasil Pencarian'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createProfilAnakCharts() {
+            // Chart 1: Status Mendapat Apresiasi
+            const apresiasiData = {};
+            currentSearchResults.forEach(item => {
+                const status = item.mendapatApresiasi || 'Tidak Diisi';
+                apresiasiData[status] = (apresiasiData[status] || 0) + 1;
+            });
+
+            const ctx1 = document.getElementById('searchChart1').getContext('2d');
+            searchChart1 = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(apresiasiData),
+                    datasets: [{
+                        label: 'Jumlah Anak',
+                        data: Object.values(apresiasiData),
+                        backgroundColor: [
+                            'rgba(236, 72, 153, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(245, 158, 11, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Status Mendapat Apresiasi - Hasil Pencarian'
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Akses Layanan Kesehatan
+            const kesehatanData = {};
+            currentSearchResults.forEach(item => {
+                const status = item.aksesLayananKesehatan || 'Tidak Diisi';
+                kesehatanData[status] = (kesehatanData[status] || 0) + 1;
+            });
+
+            const ctx2 = document.getElementById('searchChart2').getContext('2d');
+            searchChart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(kesehatanData),
+                    datasets: [{
+                        label: 'Jumlah Anak',
+                        data: Object.values(kesehatanData),
+                        backgroundColor: 'rgba(236, 72, 153, 0.8)',
+                        borderColor: 'rgba(236, 72, 153, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Akses Layanan Kesehatan - Hasil Pencarian'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createUsahaEkonomiCharts() {
+            // Chart 1: Distribusi Jenis Usaha
+            const jenisUsahaData = {};
+            currentSearchResults.forEach(item => {
+                const jenis = item.jenisUsaha || 'Tidak Diisi';
+                jenisUsahaData[jenis] = (jenisUsahaData[jenis] || 0) + 1;
+            });
+
+            const ctx1 = document.getElementById('searchChart1').getContext('2d');
+            searchChart1 = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(jenisUsahaData),
+                    datasets: [{
+                        label: 'Jumlah Usaha',
+                        data: Object.values(jenisUsahaData),
+                        backgroundColor: [
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(168, 85, 247, 0.8)',
+                            'rgba(236, 72, 153, 0.8)',
+                            'rgba(20, 184, 166, 0.8)',
+                            'rgba(251, 146, 60, 0.8)',
+                            'rgba(99, 102, 241, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribusi Jenis Usaha - Hasil Pencarian'
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Status Pembukuan
+            const pembukuanData = {};
+            currentSearchResults.forEach(item => {
+                const status = item.memilikiPembukuan || 'Tidak Diisi';
+                pembukuanData[status] = (pembukuanData[status] || 0) + 1;
+            });
+
+            const ctx2 = document.getElementById('searchChart2').getContext('2d');
+            searchChart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(pembukuanData),
+                    datasets: [{
+                        label: 'Jumlah Usaha',
+                        data: Object.values(pembukuanData),
+                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                        borderColor: 'rgba(245, 158, 11, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Status Pembukuan - Hasil Pencarian'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function resetPencarian() {
+            document.getElementById('keyword1').value = '';
+            document.getElementById('keyword2').value = '';
+            document.getElementById('keyword3').value = '';
+            document.getElementById('searchDatabase').value = 'profil';
+            
+            // Update field options setelah reset
+            updateFieldOptions();
+            
+            const container = document.getElementById('hasilPencarianContainer');
+            container.classList.add('hidden');
+            
+            const tableBody = document.getElementById('searchTableBody');
+            tableBody.innerHTML = `<tr><td colspan="2" class="px-4 py-8 text-center text-gray-500">Belum ada pencarian dilakukan</td></tr>`;
+        }
+        
+        // Initialize field options saat halaman dimuat
+        window.onload = function() {
+            checkLoginStatus();
+            updateFieldOptions();
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96ded59684aafe04',t:'MTc1NDk4OTc3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
